@@ -8,6 +8,8 @@ public class GodoiPlayerSetup : MonoBehaviour
 {
     PhotonView pV;
 
+    GameObject controller;
+
     private void Awake()
     {
         pV = GetComponent<PhotonView>();
@@ -21,7 +23,13 @@ public class GodoiPlayerSetup : MonoBehaviour
     }
     void CreateController()
     {
-        Debug.Log("Instanciou o controlador do player");
-        PhotonNetwork.Instantiate(Path.Combine("GodoiPhotonResources", "PlayerController"), Vector3.zero, Quaternion.identity);
+        Transform spawnpoint = GodoiSpawnManager.instance.GetSpawnPoint();
+        controller = PhotonNetwork.Instantiate(Path.Combine("GodoiPhotonResources", "PlayerController"), spawnpoint.position, spawnpoint.rotation, 0, new object[] {pV.ViewID});
+    }
+
+    public void Die()
+    {
+        PhotonNetwork.Destroy(controller);
+        CreateController();
     }
 }

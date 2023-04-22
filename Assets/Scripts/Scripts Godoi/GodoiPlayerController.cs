@@ -1,8 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
+using Photon.Realtime;
 
-public class GodoiPlayerController : MonoBehaviour
+public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
 {
     [SerializeField] GameObject cameraHolder;
 
@@ -12,6 +15,11 @@ public class GodoiPlayerController : MonoBehaviour
     [SerializeField] float jumpForce;
     [SerializeField] float smoothTime;
 
+    [SerializeField] GodoiItem[] itens;
+
+    int itemIndex;
+    int previousItemIndex = -1;
+
     float verticalLookRotation;
     bool grounded;
     Vector3 smoothMoveVelocity;
@@ -19,15 +27,81 @@ public class GodoiPlayerController : MonoBehaviour
 
     Rigidbody rb;
 
+    PhotonView pV;
+
+    const float maxHealth = 100f;
+    float currentHealth = maxHealth;
+
+    GodoiPlayerSetup playerManager;
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        pV = GetComponent<PhotonView>();
+
+        playerManager = PhotonView.Find((int)pV.InstantiationData[0]).GetComponent<GodoiPlayerSetup>();
+    }
+    private void Start()
+    {
+        if (pV.IsMine)
+        {
+            EquipItem(0);
+        }
+        else
+        {
+            Destroy(GetComponentInChildren<Camera>().gameObject);
+            Destroy(rb);
+        }
     }
     private void Update()
     {
+        if (!pV.IsMine)
+        {
+            return;
+        }
         MouseLook();
         Movimento();
         Pulo();
+
+        for (int i = 0; i < itens.Length; i++)
+        {
+            if (Input.GetKeyDown((i + 1).ToString()))
+            {
+                EquipItem(i);
+                break;
+            }
+        }
+
+        if (Input.GetAxisRaw("Mouse ScrollWheel") > 0f)
+        {
+            if (itemIndex >= itens.Length - 1)
+            {
+                EquipItem(0);
+            }
+            else
+            {
+                EquipItem(itemIndex + 1);
+            }
+        }
+        else if (Input.GetAxisRaw("Mouse ScrollWheel") < 0f)
+        {
+            if (itemIndex <= 0)
+            {
+                EquipItem(itens.Length - 1);
+            }
+            else
+            {
+                EquipItem(itemIndex - 1);
+            }
+        }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            itens[itemIndex].Use();
+        }
+        if (transform.position.y < -10f)
+        {
+            Die();
+        }
     }
     void MouseLook()
     {
@@ -51,12 +125,73 @@ public class GodoiPlayerController : MonoBehaviour
             rb.AddForce(transform.up * jumpForce);
         }
     }
+    void EquipItem(int _index)
+    {
+        if (_index == previousItemIndex)
+        {
+            return;
+        }
+        itemIndex = _index;
+
+        itens[itemIndex].itemGameObject.SetActive(true);
+
+        if (previousItemIndex != -1)
+        {
+            itens[previousItemIndex].itemGameObject.SetActive(false);
+        }
+
+        previousItemIndex = itemIndex;
+
+        if (pV.IsMine)
+        {
+            Hashtable hash = new Hashtable();
+            hash.Add("itemIndex", itemIndex);
+            PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
+        }
+    }
+
+    public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+    {
+        base.OnPlayerPropertiesUpdate(targetPlayer, changedProps);
+
+        if (!pV.IsMine && targetPlayer == pV.Owner)
+        {
+            EquipItem((int)changedProps["ItemIndex"]);
+        }
+    }
     public void SetGroundedState(bool _grounded)
     {
         grounded = _grounded;
     }
     private void FixedUpdate()
     {
+        if (!pV.IsMine)
+        {
+            return;
+        }
         rb.MovePosition(rb.position + transform.TransformDirection(moveAmount) * Time.fixedDeltaTime);
+    }
+
+    public void TakeDamage(float damage)
+    {
+        pV.RPC("RPC_TakeDamage", RpcTarget.All, damage);
+    }
+
+    [PunRPC]
+    void RPC_TakeDamage(float damage)
+    {
+        if (!pV.IsMine)
+        {
+            return;
+        }
+        currentHealth -= damage;
+        if (currentHealth <= 0)
+        {
+            Die();
+        }
+    }
+    void Die()
+    {
+        playerManager.Die();
     }
 }
