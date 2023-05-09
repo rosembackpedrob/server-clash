@@ -4,9 +4,13 @@ using UnityEngine;
 using Photon.Pun;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 using Photon.Realtime;
+using UnityEngine.UI;
 
 public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
 {
+    [SerializeField] Image healthBarImage;
+    [SerializeField] GameObject ui;
+
     [SerializeField] GameObject cameraHolder;
 
     [SerializeField] float mouseSensitivity;
@@ -50,6 +54,7 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
         {
             Destroy(GetComponentInChildren<Camera>().gameObject);
             Destroy(rb);
+            Destroy(ui);
         }
     }
     private void Update()
@@ -108,7 +113,7 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
         transform.Rotate(Vector3.up * Input.GetAxisRaw("Mouse X") * mouseSensitivity);
 
         verticalLookRotation += Input.GetAxisRaw("Mouse Y") * mouseSensitivity;
-        verticalLookRotation = Mathf.Clamp(verticalLookRotation, -90f, 90f);
+        verticalLookRotation = Mathf.Clamp(verticalLookRotation, -50f, 90f);
 
         cameraHolder.transform.localEulerAngles = Vector3.left * verticalLookRotation;
     }
@@ -185,6 +190,8 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
             return;
         }
         currentHealth -= damage;
+
+        healthBarImage.fillAmount = currentHealth / maxHealth;
         if (currentHealth <= 0)
         {
             Die();

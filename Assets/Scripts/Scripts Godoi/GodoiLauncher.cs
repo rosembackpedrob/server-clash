@@ -49,7 +49,7 @@ public class GodoiLauncher : MonoBehaviourPunCallbacks
 
         Debug.Log(message: "We're in the lobby");
 
-        PhotonNetwork.NickName = "Player " + Random.Range(0, 1000).ToString("0000");
+        //PhotonNetwork.NickName = "Player " + Random.Range(0, 1000).ToString("0000");
     }
     public void CreateRoom()
     {
