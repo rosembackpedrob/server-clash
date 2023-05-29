@@ -8,16 +8,23 @@ using System.IO;
 public class GodoiRoomManager : MonoBehaviourPunCallbacks
 {
     public static GodoiRoomManager Instance;
-
+    public GodoiObjetoDeletavel del;
+    public int jogadoresNoTimeA;
     private void Awake()
     {
-        if (Instance)
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else if (Instance != this)
         {
             Destroy(gameObject);
-            return;
         }
         DontDestroyOnLoad(gameObject);
-        Instance = this;
+    }
+    private void Start()
+    {
+        del = FindObjectOfType<GodoiObjetoDeletavel>();
     }
     public override void OnEnable()
     {
@@ -35,13 +42,5 @@ public class GodoiRoomManager : MonoBehaviourPunCallbacks
         {
             PhotonNetwork.Instantiate(Path.Combine("GodoiPhotonResources", "PlayerManager"), Vector3.zero, Quaternion.identity);
         }
-    }
-    void Start()
-    {
-
-    }
-    void Update()
-    {
-
     }
 }

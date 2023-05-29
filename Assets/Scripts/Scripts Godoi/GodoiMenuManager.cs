@@ -41,4 +41,8 @@ public class GodoiMenuManager : MonoBehaviour
     {
         menu.Close();
     }
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
 }
