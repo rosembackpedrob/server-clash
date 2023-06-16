@@ -34,6 +34,8 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
     PhotonView pV;
 
     const float maxHealth = 100f;
+    int _kill;
+    int _Death;
     float currentHealth = maxHealth;
 
     GodoiPlayerSetup playerManager;
@@ -49,6 +51,7 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
         if (pV.IsMine)
         {
             EquipItem(0);
+            
         }
         else
         {
@@ -179,7 +182,7 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
 
     public void TakeDamage(float damage)
     {
-        pV.RPC("RPC_TakeDamage", RpcTarget.All, damage);
+        pV.RPC(nameof(RPC_TakeDamage), RpcTarget.All, damage);
     }
 
     [PunRPC]
@@ -195,6 +198,7 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
         if (currentHealth <= 0)
         {
             Die();
+            _Death++;
         }
     }
     void Die()

@@ -5,6 +5,8 @@ using Photon.Pun;
 using TMPro;
 using Photon.Realtime;
 using System.Linq;
+using System.IO;
+
 public class GodoiLauncher : MonoBehaviourPunCallbacks
 {
     public static GodoiLauncher Instance;
@@ -17,15 +19,19 @@ public class GodoiLauncher : MonoBehaviourPunCallbacks
     [SerializeField] GameObject roomListPrefab;
 
     [SerializeField] Transform playerListContent;
-    [SerializeField] Transform playerListTimeA;
-    [SerializeField] Transform playerListTimeB;
+    [SerializeField] public Transform playerListTimeA;
+    [SerializeField] public Transform playerListTimeB;
     [SerializeField] GameObject playerListPrefab;
+    [SerializeField] public GameObject playerListDefensores;
+    [SerializeField] public GameObject playerListAtacantes;
 
     [SerializeField] GameObject startGameButton;
 
     [SerializeField] GodoiRoomManager RM;
     public bool TimeA;
     public bool TimeB;
+    public int conttimeA;
+    public int conttimeB;
     private void Awake()
     {
         Instance = this;
@@ -48,27 +54,6 @@ public class GodoiLauncher : MonoBehaviourPunCallbacks
 
         PhotonNetwork.AutomaticallySyncScene = true;
     }
-    /*public static Dictionary<int, Team> playerTeams = new Dictionary<int, Team>();
-
-    public static void AssignPlayerToTeam(int playerId, Team team)
-    {
-        if (!playerTeams.ContainsKey(playerId))
-        {
-            playerTeams.Add(playerId, team);
-        }
-        else
-        {
-            playerTeams[playerId] = team;
-        }
-    }
-    public static Team GetPlayerTeam(int playerId)
-    {
-        if (playerTeams.ContainsKey(playerId))
-        {
-            return playerTeams[playerId];
-        }
-        return Team.TeamA; // Time padrão se o jogador não estiver atribuído a nenhum time
-    }*/
     public override void OnJoinedLobby()
     {
         base.OnJoinedLobby();
@@ -81,12 +66,18 @@ public class GodoiLauncher : MonoBehaviourPunCallbacks
     }
     public void CreateRoom()
     {
+        RoomOptions roomOptions = new RoomOptions();
+        roomOptions.MaxPlayers = 10;
         if (string.IsNullOrEmpty(roomNameIF.text))
         {
             return;
         }
         PhotonNetwork.CreateRoom(roomNameIF.text);
         GodoiMenuManager.Instance.OpenMenu("loading");
+    }
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        base.OnPlayerEnteredRoom(newPlayer);
     }
     public override void OnJoinedRoom()
     {
@@ -98,36 +89,19 @@ public class GodoiLauncher : MonoBehaviourPunCallbacks
 
         Player[] players = PhotonNetwork.PlayerList;
 
-        /*foreach (Transform child in playerListContent)
+        Debug.Log("meu actor number é: " + PhotonNetwork.LocalPlayer.ActorNumber);
+
+        if (PhotonNetwork.IsMasterClient)
         {
-            Destroy(child.gameObject);
-        }*/
-        if (RM.jogadoresNoTimeA <= 0)
-        {
-            TimeA = true;
-            RM.jogadoresNoTimeA++;
+            PlayerDataManager.dadosDosPlayers.Clear();
         }
-        else TimeB = true;
-        foreach (Transform child in playerListTimeA)
+
+        if (photonView.IsMine)
         {
-            Destroy(child.gameObject);
+            RM.Teste();
+            Debug.Log("pv é meu");
         }
-        foreach (Transform child in playerListTimeB)
-        {
-            Destroy(child.gameObject);
-        }
-        for (int i = 0; i < players.Count(); i++)
-        {
-            if (TimeA == true)
-            {
-                Instantiate(playerListPrefab, playerListTimeA).GetComponent<GodoiListaNomeJogador>().SetUp(players[i]);
-            }
-            else if (TimeB == true)
-            {
-                Instantiate(playerListPrefab, playerListTimeB).GetComponent<GodoiListaNomeJogador>().SetUp(players[i]);
-            }
-            //Instantiate(playerListPrefab, playerListContent).GetComponent<GodoiListaNomeJogador>().SetUp(players[i]);
-        }
+        photonView.RPC(nameof(RequisicaoDeTime), RpcTarget.MasterClient);
         startGameButton.SetActive(PhotonNetwork.IsMasterClient);
     }
     public void JoinTeam(int team)
@@ -197,41 +171,42 @@ public class GodoiLauncher : MonoBehaviourPunCallbacks
             Instantiate(roomListPrefab, roomListContent).GetComponent<GodoiRoomListButton>().SetUp(roomList[i]); 
         }
     }
-    public void EntrarNoTimeA()
+    [PunRPC]
+    public void RequisicaoDeTime(PhotonMessageInfo mensagem)
     {
-        TimeA = true;
-        TimeB = false;
-    }
-    public void EntrarNoTimeB()
-    {
-        TimeB = true;
-        TimeA = false;
-    }
-    public override void OnPlayerEnteredRoom(Player newPlayer)
-    {
-        base.OnPlayerEnteredRoom(newPlayer);
-
-        //Instantiate(playerListPrefab, playerListContent).GetComponent<GodoiListaNomeJogador>().SetUp(newPlayer);
-
-        int playerId = newPlayer.ActorNumber;
-
-        if (playerId <= 0)
+        if (conttimeA <= conttimeB)
         {
-            Instantiate(playerListPrefab, playerListTimeA).GetComponent<GodoiListaNomeJogador>().SetUp(newPlayer);
+            // Jogador entra no timeA
+            conttimeA++;
+            photonView.RPC(nameof(DefinirTime), mensagem.Sender, true, mensagem.Sender.ActorNumber);
+            Debug.Log("Vai para o TimeA");
         }
-        else Instantiate(playerListPrefab, playerListTimeB).GetComponent<GodoiListaNomeJogador>().SetUp(newPlayer);
-        //Team team = Team.TeamA; // Defina o time para o jogador com base na lógica do seu jogo. Trocar para usar Botão
-        /*if (TimeA == true || jogadoresNoTimeA <= 5)
+        else
         {
-            Team team = Team.TeamA;
-            GodoiTeamManager.AssignPlayerToTeam(playerId, team);
-            jogadoresNoTimeA++;
+            // Jogador entra no timeB
+            conttimeB++;
+            photonView.RPC(nameof(DefinirTime), mensagem.Sender, false, mensagem.Sender.ActorNumber);
+            Debug.Log("Vai para o timeB");
         }
-        else// if (TimeB == true || jogadoresNoTimeB <= 4)
+    }
+    [PunRPC]
+    public void DefinirTime(bool EntrarNoTimeA, int ActorNumber)
+    {
+        if (EntrarNoTimeA)
         {
-            Team team = Team.TeamB;
-            GodoiTeamManager.AssignPlayerToTeam(playerId, team);
-            jogadoresNoTimeB++;
-        }*/
+            Team teamA = Team.TeamA;
+            GodoiTeamManager.AssignPlayerToTeam(PhotonNetwork.LocalPlayer.ActorNumber, teamA);
+            Debug.Log("Entrei no timeA");
+            PhotonNetwork.Instantiate(Path.Combine("GodoiPhotonResources", "ListaDefensores"), Vector3.zero, Quaternion.identity, 0, new object[] { ActorNumber });
+            
+        }
+        else
+        {
+            Team teamB = Team.TeamB;
+            GodoiTeamManager.AssignPlayerToTeam(PhotonNetwork.LocalPlayer.ActorNumber, teamB);
+            Debug.Log("Entrei no TimeB");
+            PhotonNetwork.Instantiate(Path.Combine("GodoiPhotonResources", "ListaAtacantes"), Vector3.zero, Quaternion.identity, 0, new object[] { ActorNumber });
+
+        }
     }
 }
