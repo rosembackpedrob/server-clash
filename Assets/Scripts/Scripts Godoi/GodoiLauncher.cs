@@ -195,16 +195,22 @@ public class GodoiLauncher : MonoBehaviourPunCallbacks
         if (EntrarNoTimeA)
         {
             Team teamA = Team.TeamA;
+            LayerMask layer = LayerMask.NameToLayer("Defensores");
             GodoiTeamManager.AssignPlayerToTeam(PhotonNetwork.LocalPlayer.ActorNumber, teamA);
+            GodoiTeamManager.AssignPlayerLayer(PhotonNetwork.LocalPlayer.ActorNumber, layer);
             Debug.Log("Entrei no timeA");
+            Debug.Log(layer);
             PhotonNetwork.Instantiate(Path.Combine("GodoiPhotonResources", "ListaDefensores"), Vector3.zero, Quaternion.identity, 0, new object[] { ActorNumber });
             
         }
         else
         {
             Team teamB = Team.TeamB;
+            LayerMask layer = LayerMask.NameToLayer("Atacantes");
             GodoiTeamManager.AssignPlayerToTeam(PhotonNetwork.LocalPlayer.ActorNumber, teamB);
+            GodoiTeamManager.AssignPlayerLayer(PhotonNetwork.LocalPlayer.ActorNumber, layer);
             Debug.Log("Entrei no TimeB");
+            Debug.Log(layer);
             PhotonNetwork.Instantiate(Path.Combine("GodoiPhotonResources", "ListaAtacantes"), Vector3.zero, Quaternion.identity, 0, new object[] { ActorNumber });
 
         }

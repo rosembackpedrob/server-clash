@@ -119,6 +119,8 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
         verticalLookRotation = Mathf.Clamp(verticalLookRotation, -50f, 90f);
 
         cameraHolder.transform.localEulerAngles = Vector3.left * verticalLookRotation;
+
+        Cursor.lockState = CursorLockMode.Confined;
     }
     void Movimento()
     {
@@ -162,9 +164,17 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
     {
         base.OnPlayerPropertiesUpdate(targetPlayer, changedProps);
 
-        if (!pV.IsMine && targetPlayer == pV.Owner)
+        try
         {
-            EquipItem((int)changedProps["ItemIndex"]);
+            if (!pV.IsMine && targetPlayer == pV.Owner)
+            {
+                EquipItem((int)changedProps["ItemIndex"]);
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.Log(e);
+            //throw;
         }
     }
     public void SetGroundedState(bool _grounded)

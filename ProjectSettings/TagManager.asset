@@ -4,8 +4,8 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - TimeA
-  - TimeB
+  - Defensores
+  - Atacantes
   layers:
   - Default
   - TransparentFX
@@ -13,8 +13,8 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
+  - Defensores
+  - Atacantes
   - PostProcessing
   - 
   - 
