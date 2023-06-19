@@ -26,8 +26,6 @@ public class GodoiLauncher : MonoBehaviourPunCallbacks
     [SerializeField] public GameObject playerListAtacantes;
 
     [SerializeField] GameObject startGameButton;
-
-    [SerializeField] GodoiRoomManager RM;
     public bool TimeA;
     public bool TimeB;
     public int conttimeA;
@@ -41,8 +39,6 @@ public class GodoiLauncher : MonoBehaviourPunCallbacks
         Debug.Log(message: "Connecting to Server");
 
         PhotonNetwork.ConnectUsingSettings();
-
-        RM = GameObject.FindObjectOfType<GodoiRoomManager>();
     }
     public override void OnConnectedToMaster()
     {
@@ -98,7 +94,6 @@ public class GodoiLauncher : MonoBehaviourPunCallbacks
 
         if (photonView.IsMine)
         {
-            RM.Teste();
             Debug.Log("pv é meu");
         }
         photonView.RPC(nameof(RequisicaoDeTime), RpcTarget.MasterClient);
@@ -179,14 +174,14 @@ public class GodoiLauncher : MonoBehaviourPunCallbacks
             // Jogador entra no timeA
             conttimeA++;
             photonView.RPC(nameof(DefinirTime), mensagem.Sender, true, mensagem.Sender.ActorNumber);
-            Debug.Log("Vai para o TimeA");
+            Debug.Log("Entrei no time Defensores");
         }
         else
         {
             // Jogador entra no timeB
             conttimeB++;
             photonView.RPC(nameof(DefinirTime), mensagem.Sender, false, mensagem.Sender.ActorNumber);
-            Debug.Log("Vai para o timeB");
+            Debug.Log("Entrei no Time Atacantes");
         }
     }
     [PunRPC]
@@ -195,24 +190,14 @@ public class GodoiLauncher : MonoBehaviourPunCallbacks
         if (EntrarNoTimeA)
         {
             Team teamA = Team.TeamA;
-            LayerMask layer = LayerMask.NameToLayer("Defensores");
             GodoiTeamManager.AssignPlayerToTeam(PhotonNetwork.LocalPlayer.ActorNumber, teamA);
-            GodoiTeamManager.AssignPlayerLayer(PhotonNetwork.LocalPlayer.ActorNumber, layer);
-            Debug.Log("Entrei no timeA");
-            Debug.Log(layer);
             PhotonNetwork.Instantiate(Path.Combine("GodoiPhotonResources", "ListaDefensores"), Vector3.zero, Quaternion.identity, 0, new object[] { ActorNumber });
-            
         }
         else
         {
             Team teamB = Team.TeamB;
-            LayerMask layer = LayerMask.NameToLayer("Atacantes");
             GodoiTeamManager.AssignPlayerToTeam(PhotonNetwork.LocalPlayer.ActorNumber, teamB);
-            GodoiTeamManager.AssignPlayerLayer(PhotonNetwork.LocalPlayer.ActorNumber, layer);
-            Debug.Log("Entrei no TimeB");
-            Debug.Log(layer);
             PhotonNetwork.Instantiate(Path.Combine("GodoiPhotonResources", "ListaAtacantes"), Vector3.zero, Quaternion.identity, 0, new object[] { ActorNumber });
-
         }
     }
 }

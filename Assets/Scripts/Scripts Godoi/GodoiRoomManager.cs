@@ -43,14 +43,4 @@ public class GodoiRoomManager : MonoBehaviourPunCallbacks
             PhotonNetwork.Instantiate(Path.Combine("GodoiPhotonResources", "PlayerManager"), Vector3.zero, Quaternion.identity);
         }
     }
-    public void Teste()
-    {
-        int playerId = PhotonNetwork.LocalPlayer.ActorNumber;
-        Team playerTeam = GodoiTeamManager.GetPlayerTeam(playerId);
-        Debug.Log(playerTeam);
-    }
-    public void Update()
-    {
-        
-    }
 }

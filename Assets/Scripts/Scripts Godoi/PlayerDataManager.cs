@@ -9,6 +9,8 @@ public class PlayerData
 {
     public int actorID;
     public bool timeA;
+    public LayerMask layerDefensores;
+    public LayerMask layerAtacantes;
 }
 public static class PlayerDataManager
 {

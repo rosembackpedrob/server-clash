@@ -16,6 +16,7 @@ public class GodoiSpawnManager : MonoBehaviourPun
     public int spawnCountDefensores = 5;
     public bool posicaoOcupada;
     Team timeDoPidao;
+    LayerMask layerDoPidao;
     private void Awake()
     {
         instance = this;
@@ -26,7 +27,7 @@ public class GodoiSpawnManager : MonoBehaviourPun
         int playerId = PhotonNetwork.LocalPlayer.ActorNumber;
         Team playerTeam = GodoiTeamManager.GetPlayerTeam(playerId);
         timeDoPidao = playerTeam;
-        if (timeDoPidao == Team.TeamB)
+        if (timeDoPidao == Team.TeamA)
         {
             spawnPoints = SpawnLocalDefensores;
         }

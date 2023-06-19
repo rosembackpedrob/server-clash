@@ -2102,6 +2102,7 @@ MonoBehaviour:
   itemGameObjectPublic: {fileID: 0}
   bulletImpactPrefab: {fileID: 942064173732246847, guid: cb5f1ac324c5e6d4cae1bf19a24d2cc0, type: 3}
   cam: {fileID: 3050245711830509475}
+  myPlayerController: {fileID: 0}
 --- !u!114 &229232448523710559
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2479,6 +2480,7 @@ MonoBehaviour:
   itens:
   - {fileID: 6502339728192987463}
   - {fileID: 2236413844631687310}
+  playerTeam: 0
 --- !u!114 &4222985286994413318
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2723,6 +2725,7 @@ MonoBehaviour:
   itemGameObjectPublic: {fileID: 0}
   bulletImpactPrefab: {fileID: 942064173732246847, guid: cb5f1ac324c5e6d4cae1bf19a24d2cc0, type: 3}
   cam: {fileID: 3050245711830509475}
+  myPlayerController: {fileID: 3050245711771194654}
 --- !u!114 &1550903961583542419
 MonoBehaviour:
   m_ObjectHideFlags: 0

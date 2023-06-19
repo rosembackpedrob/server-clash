@@ -9,6 +9,10 @@ public class GodoiSingleShotGun : GodoiGun
 
     PhotonView pv;
 
+    LayerMask meuLayer;
+
+    [SerializeField]GameObject myPlayerController;
+
     private void Awake()
     {
         pv = GetComponent<PhotonView>();
@@ -20,12 +24,22 @@ public class GodoiSingleShotGun : GodoiGun
 
     void Shoot()
     {
+        
         Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f));
         ray.origin = cam.transform.position;
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
-            hit.collider.gameObject.GetComponent<GodoiIDameagable>()?.TakeDamage(((GodoiGunInfo)itemInfo).damage);
-            pv.RPC("RPC_Shoot", RpcTarget.All, hit.point, hit.normal);
+            if (hit.collider.gameObject.GetComponent<GodoiPlayerController>() == null)
+            {
+                Debug.Log("Objeto do Cenário");
+                pv.RPC(nameof(RPC_Shoot), RpcTarget.All, hit.point, hit.normal);
+            }
+            else if (hit.collider.gameObject.GetComponent<GodoiPlayerController>().playerTeam != myPlayerController.GetComponent<GodoiPlayerController>().playerTeam)
+            {
+                Debug.Log("Tiro no inimigo");
+                hit.collider.gameObject.GetComponent<GodoiIDameagable>()?.TakeDamage(((GodoiGunInfo)itemInfo).damage);
+                pv.RPC(nameof(RPC_Shoot), RpcTarget.All, hit.point, hit.normal);
+            }
         }
     }
     [PunRPC]

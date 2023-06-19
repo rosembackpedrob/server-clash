@@ -28,9 +28,10 @@ public class GodoiTeamManager
     {
         if (playerTeams.ContainsKey(playerId))
         {
+            Debug.Log("meu team: " + playerTeams[playerId]);
             return playerTeams[playerId];
         }
-        return Team.TeamA; // Time padrão se o jogador não estiver atribuído a nenhum time
+        return Team.TeamA;
     }
     public static void AssignPlayerLayer(int playerId, LayerMask teamLayer)
     {
@@ -49,6 +50,6 @@ public class GodoiTeamManager
         {
             return playerLayer[playerId];
         }
-        return LayerMask.NameToLayer("Defensores"); // Layer padrão se o jogador não estiver atribuído a nenhum time
+        return LayerMask.NameToLayer("Defensores");
     }
 }

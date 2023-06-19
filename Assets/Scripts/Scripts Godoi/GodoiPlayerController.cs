@@ -39,6 +39,8 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
     float currentHealth = maxHealth;
 
     GodoiPlayerSetup playerManager;
+
+    public Team playerTeam;
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -51,7 +53,17 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
         if (pV.IsMine)
         {
             EquipItem(0);
-            
+            int playerId = PhotonNetwork.LocalPlayer.ActorNumber;
+            playerTeam = GodoiTeamManager.GetPlayerTeam(playerId);
+            photonView.RPC(nameof(EspalhaMeuTime), RpcTarget.All, playerTeam);
+            /*if (playerTeam == Team.TeamA)
+            {
+                SetlayerDefensores();
+            }
+            else if (playerTeam == Team.TeamB)
+            {
+                SetLayerAtacantes();
+            }*/
         }
         else
         {
@@ -59,6 +71,16 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
             Destroy(rb);
             Destroy(ui);
         }
+    }
+    void SetlayerDefensores()
+    {
+        int layer = 6;
+        gameObject.layer = layer;
+    }
+    void SetLayerAtacantes()
+    {
+        int layer = 7;
+        gameObject.layer = layer;
     }
     private void Update()
     {
@@ -214,5 +236,10 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
     void Die()
     {
         playerManager.Die();
+    }
+    [PunRPC]
+    void EspalhaMeuTime(Team time)
+    {
+        playerTeam = time;
     }
 }
