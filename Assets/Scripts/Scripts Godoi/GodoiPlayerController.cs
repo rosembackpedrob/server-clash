@@ -34,13 +34,14 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
     PhotonView pV;
 
     const float maxHealth = 100f;
-    int _kill;
-    int _Death;
-    float currentHealth = maxHealth;
+    public int _kill;
+    public int _Death;
+    public float currentHealth = maxHealth;
 
     GodoiPlayerSetup playerManager;
 
     public Team playerTeam;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -56,14 +57,6 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
             int playerId = PhotonNetwork.LocalPlayer.ActorNumber;
             playerTeam = GodoiTeamManager.GetPlayerTeam(playerId);
             photonView.RPC(nameof(EspalhaMeuTime), RpcTarget.All, playerTeam);
-            /*if (playerTeam == Team.TeamA)
-            {
-                SetlayerDefensores();
-            }
-            else if (playerTeam == Team.TeamB)
-            {
-                SetLayerAtacantes();
-            }*/
         }
         else
         {
@@ -91,7 +84,6 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
         MouseLook();
         Movimento();
         Pulo();
-
         for (int i = 0; i < itens.Length; i++)
         {
             if (Input.GetKeyDown((i + 1).ToString()))
@@ -188,7 +180,7 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
 
         try
         {
-            if (!pV.IsMine && targetPlayer == pV.Owner)
+            if (changedProps.ContainsKey("itemIndex") && !pV.IsMine && targetPlayer == pV.Owner)
             {
                 EquipItem((int)changedProps["ItemIndex"]);
             }
@@ -214,23 +206,19 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
 
     public void TakeDamage(float damage)
     {
-        pV.RPC(nameof(RPC_TakeDamage), RpcTarget.All, damage);
+        pV.RPC(nameof(RPC_TakeDamage), pV.Owner, damage);
     }
 
     [PunRPC]
-    void RPC_TakeDamage(float damage)
+    void RPC_TakeDamage(float damage, PhotonMessageInfo info)
     {
-        if (!pV.IsMine)
-        {
-            return;
-        }
         currentHealth -= damage;
 
         healthBarImage.fillAmount = currentHealth / maxHealth;
         if (currentHealth <= 0)
         {
             Die();
-            _Death++;
+            GodoiPlayerSetup.Find(info.Sender).GetKill();
         }
     }
     void Die()

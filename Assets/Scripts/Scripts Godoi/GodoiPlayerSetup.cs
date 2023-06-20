@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using System.IO;
+using Photon.Realtime;
+using System.Linq;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class GodoiPlayerSetup : MonoBehaviourPun
 {
@@ -13,6 +16,11 @@ public class GodoiPlayerSetup : MonoBehaviourPun
     public int playerId;
 
     public Team meuTime;
+
+    public int myPlayerKill;
+    public int myPlayerDeath;
+
+    public int dinheiro;
     private void Awake()
     {
         pV = GetComponent<PhotonView>();
@@ -30,41 +38,36 @@ public class GodoiPlayerSetup : MonoBehaviourPun
     {
         Transform spawnpoint = GodoiSpawnManager.instance.GetSpawnPoint();
         controller = PhotonNetwork.Instantiate(Path.Combine("GodoiPhotonResources", "PlayerController"), spawnpoint.position, spawnpoint.rotation, 0, new object[] { pV.ViewID });
-        //photonView.RPC(nameof(PedirLayer), RpcTarget.MasterClient);
+        controller.transform.parent = gameObject.transform;
+        //controller.GetComponent<GodoiPlayerController>()._kill = dados.kill;
+        //controller.GetComponent<GodoiPlayerController>()._Death = dados.death;
     }
     public void Die()
     {
         PhotonNetwork.Destroy(controller);
         CreateController();
+
+        myPlayerDeath++;
+
+        Hashtable hash = new Hashtable();
+        hash.Add("deaths", myPlayerDeath);
+        PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
     }
-    /*[PunRPC]
-    void PedirLayer(PhotonMessageInfo mensagem)
+    public void GetKill()
     {
-        int playerId = PhotonNetwork.LocalPlayer.ActorNumber;
-        Team playerTeam = GodoiTeamManager.GetPlayerTeam(playerId);
-        if (playerTeam == Team.TeamA)
-        {
-            photonView.RPC(nameof(DefinirLayer), mensagem.Sender, true, mensagem.Sender.ActorNumber);
-        }
-        else if (playerTeam == Team.TeamB)
-        {
-            photonView.RPC(nameof(DefinirLayer), mensagem.Sender, false, mensagem.Sender.ActorNumber);
-        }
+        pV.RPC(nameof(RPC_GetKill), pV.Owner);
     }
     [PunRPC]
-    void DefinirLayer(bool Defensor, int actorNumber)
+    void RPC_GetKill()
     {
-        if (Defensor)
-        {
-            Transform spawnpoint = GodoiSpawnManager.instance.GetSpawnPoint();
-            controller = PhotonNetwork.Instantiate(Path.Combine("GodoiPhotonResources", "PlayerController"), spawnpoint.position, spawnpoint.rotation, 0, new object[] { actorNumber });
-            controller.layer = LayerMask.NameToLayer("Defensores");
-        }
-        else
-        {
-            Transform spawnpoint = GodoiSpawnManager.instance.GetSpawnPoint();
-            controller = PhotonNetwork.Instantiate(Path.Combine("GodoiPhotonResources", "PlayerController"), spawnpoint.position, spawnpoint.rotation, 0, new object[] { actorNumber });
-            controller.layer = LayerMask.NameToLayer("Atacantes");
-        }
-    }*/
+        myPlayerKill++;
+
+        Hashtable hash = new Hashtable();
+        hash.Add("kills", myPlayerKill);
+        PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
+    }
+    public static GodoiPlayerSetup Find(Player player)
+    {
+        return FindObjectsOfType<GodoiPlayerSetup>().SingleOrDefault(x => x.pV.Owner == player);
+    }
 }

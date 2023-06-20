@@ -69,3 +69,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerId: 0
   meuTime: 0
+  myPlayerKill: 0
+  myPlayerDeath: 0
+  dinheiro: 5000

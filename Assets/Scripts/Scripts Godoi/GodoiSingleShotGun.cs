@@ -13,9 +13,15 @@ public class GodoiSingleShotGun : GodoiGun
 
     [SerializeField]GameObject myPlayerController;
 
+    public GodoiPlayerSetup myPlayerSetup;
+
     private void Awake()
     {
         pv = GetComponent<PhotonView>();
+    }
+    private void Start()
+    {
+        myPlayerSetup = gameObject.transform.GetParentComponent<GodoiPlayerSetup>();
     }
     public override void Use()
     {
@@ -24,7 +30,6 @@ public class GodoiSingleShotGun : GodoiGun
 
     void Shoot()
     {
-        
         Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f));
         ray.origin = cam.transform.position;
         if (Physics.Raycast(ray, out RaycastHit hit))
@@ -39,6 +44,10 @@ public class GodoiSingleShotGun : GodoiGun
                 Debug.Log("Tiro no inimigo");
                 hit.collider.gameObject.GetComponent<GodoiIDameagable>()?.TakeDamage(((GodoiGunInfo)itemInfo).damage);
                 pv.RPC(nameof(RPC_Shoot), RpcTarget.All, hit.point, hit.normal);
+                if (hit.collider.gameObject.GetComponent<GodoiPlayerController>().currentHealth <= 0)
+                {
+                    myPlayerSetup.myPlayerKill++;
+                }
             }
         }
     }
