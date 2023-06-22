@@ -16,7 +16,10 @@ public class GodoiSpawnManager : MonoBehaviourPun
     public int spawnCountDefensores = 5;
     public bool posicaoOcupada;
     Team timeDoPidao;
-    LayerMask layerDoPidao;
+    public GodoiPlayerController[] todosPlayerController;
+
+    public List <GodoiPlayerController> playerControllersDefensores = new List<GodoiPlayerController>();
+    public List <GodoiPlayerController> playerControllersAtacantes = new List<GodoiPlayerController> ();
     private void Awake()
     {
         instance = this;
@@ -35,9 +38,42 @@ public class GodoiSpawnManager : MonoBehaviourPun
         {
             spawnPoints = SpawnLocalAtacantes;
         }
+        StartCoroutine(encontrarObjetos());
+
     }
     public Transform GetSpawnPoint()
     {
         return spawnPoints[Random.Range(0, spawnPoints.Length)].transform;
     }
+    IEnumerator encontrarObjetos()
+    {
+        yield return new WaitForSeconds(1);
+        todosPlayerController = GameObject.FindObjectsOfType<GodoiPlayerController>();
+        foreach (GodoiPlayerController playerController in todosPlayerController)
+        {
+            if (playerController.playerTeam == Team.TeamA)
+            {
+                playerControllersDefensores.Add(playerController);
+            }
+            else
+            {
+                playerControllersAtacantes.Add(playerController);
+            }
+        }
+    }
+    public void Update()
+    {
+        for (int i = 0; i < playerControllersDefensores.Count; i++)
+        {
+
+        }
+        foreach (GodoiPlayerController playerController in playerControllersDefensores)
+        {
+            if (playerController == null)
+            {
+
+            }
+        }
+    }
+    // se o jogador estiver no timeA ele vai para o array de defensores, ao contrario vai para o de atacantes
 }

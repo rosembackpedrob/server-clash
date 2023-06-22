@@ -11,9 +11,7 @@ public class GodoiPlayerSetup : MonoBehaviourPun
 {
     PhotonView pV;
 
-    GameObject controller;
-
-    public int playerId;
+    public GameObject controller;
 
     public Team meuTime;
 
@@ -21,32 +19,44 @@ public class GodoiPlayerSetup : MonoBehaviourPun
     public int myPlayerDeath;
 
     public int dinheiro;
+
+    public PlacarManager placar;
+
     private void Awake()
     {
         pV = GetComponent<PhotonView>();
     }
     void Start()
     {
-        playerId = PhotonNetwork.LocalPlayer.ActorNumber;
+        int playerId = PhotonNetwork.LocalPlayer.ActorNumber;
         meuTime = GodoiTeamManager.GetPlayerTeam(playerId);
         if (pV.IsMine)
         {
             CreateController();
         }
+        placar = FindObjectOfType<PlacarManager>();
     }
     void CreateController()
     {
         Transform spawnpoint = GodoiSpawnManager.instance.GetSpawnPoint();
         controller = PhotonNetwork.Instantiate(Path.Combine("GodoiPhotonResources", "PlayerController"), spawnpoint.position, spawnpoint.rotation, 0, new object[] { pV.ViewID });
         controller.transform.parent = gameObject.transform;
-        //controller.GetComponent<GodoiPlayerController>()._kill = dados.kill;
-        //controller.GetComponent<GodoiPlayerController>()._Death = dados.death;
+    }
+    public void Spawn()
+    {
+        if (pV.IsMine)
+        {
+            if (controller != null)
+            {
+                PhotonNetwork.Destroy(controller);
+            }
+            CreateController();
+        }
     }
     public void Die()
     {
         PhotonNetwork.Destroy(controller);
-        CreateController();
-
+        PlacarManager.instance.ComecarContagem();
         myPlayerDeath++;
 
         Hashtable hash = new Hashtable();

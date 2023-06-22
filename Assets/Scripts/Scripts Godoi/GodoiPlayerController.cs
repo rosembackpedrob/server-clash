@@ -39,7 +39,6 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
     public float currentHealth = maxHealth;
 
     GodoiPlayerSetup playerManager;
-
     public Team playerTeam;
 
     private void Awake()

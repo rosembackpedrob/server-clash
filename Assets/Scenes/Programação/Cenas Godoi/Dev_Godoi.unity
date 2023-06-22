@@ -463,7 +463,6 @@ MonoBehaviour:
   playerListDefensores: {fileID: 5061588913686209512, guid: 39a96c218cfd8164baeba11ba627d413, type: 3}
   playerListAtacantes: {fileID: 5093995715670135949, guid: d10b2bd087b00ce49ab49ce36545f43a, type: 3}
   startGameButton: {fileID: 803182780}
-  RM: {fileID: 0}
   TimeA: 0
   TimeB: 0
   conttimeA: 0
