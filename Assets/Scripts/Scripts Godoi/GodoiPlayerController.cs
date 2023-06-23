@@ -9,9 +9,12 @@ using UnityEngine.UI;
 public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
 {
     [SerializeField] Image healthBarImage;
+    [SerializeField] Image ShieldBarImage;
     [SerializeField] GameObject ui;
 
     [SerializeField] GameObject cameraHolder;
+
+    [SerializeField] GameObject[] personagens3D;
 
     [SerializeField] float mouseSensitivity;
     [SerializeField] float sprintSpeed;
@@ -33,14 +36,18 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
 
     PhotonView pV;
 
-    const float maxHealth = 100f;
     public int _kill;
     public int _Death;
+    const float maxHealth = 100f;
     public float currentHealth = maxHealth;
+    const float maxShield = 50f;
+    public float currentShield = 0;
 
     GodoiPlayerSetup playerManager;
     public Team playerTeam;
+    public Personagem playerPersonagem;
 
+    public GodoiLoja loja;
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -56,6 +63,21 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
             int playerId = PhotonNetwork.LocalPlayer.ActorNumber;
             playerTeam = GodoiTeamManager.GetPlayerTeam(playerId);
             photonView.RPC(nameof(EspalhaMeuTime), RpcTarget.All, playerTeam);
+            playerPersonagem = CharacterManager.PegarPersonagem(playerId);
+            if (playerPersonagem == Personagem.Cria)
+            {
+                personagens3D[0].SetActive(true);
+            }
+            else if (playerPersonagem == Personagem.Sueli)
+            {
+                personagens3D[1].SetActive(true);
+            }
+            else if (playerPersonagem == Personagem.Espectro)
+            {
+                personagens3D[2].SetActive(true);
+            }
+            photonView.RPC(nameof(EspalhaMeuPersonagem), RpcTarget.All, playerPersonagem);
+            loja = gameObject.transform.GetComponentInChildren<GodoiLoja>();
         }
         else
         {
@@ -77,6 +99,10 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
     private void Update()
     {
         if (!pV.IsMine)
+        {
+            return;
+        }
+        if (loja.Loja.activeSelf == true)
         {
             return;
         }
@@ -202,18 +228,28 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
         }
         rb.MovePosition(rb.position + transform.TransformDirection(moveAmount) * Time.fixedDeltaTime);
     }
-
     public void TakeDamage(float damage)
     {
         pV.RPC(nameof(RPC_TakeDamage), pV.Owner, damage);
     }
-
+    public void AttEscudo()
+    {
+        ShieldBarImage.fillAmount = currentShield / maxShield;
+    }
     [PunRPC]
     void RPC_TakeDamage(float damage, PhotonMessageInfo info)
     {
-        currentHealth -= damage;
+        if (currentShield > 0)
+        {
+            currentHealth -= damage;
+            ShieldBarImage.fillAmount = currentShield / maxShield;
+        }
+        else
+        {
+            currentHealth -= damage;
 
-        healthBarImage.fillAmount = currentHealth / maxHealth;
+            healthBarImage.fillAmount = currentHealth / maxHealth;
+        }
         if (currentHealth <= 0)
         {
             Die();
@@ -228,5 +264,11 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
     void EspalhaMeuTime(Team time)
     {
         playerTeam = time;
+    }
+    [PunRPC]
+    void EspalhaMeuPersonagem(Personagem personagem, PhotonMessageInfo info)
+    {
+        playerPersonagem = personagem;
+        //info.photonView.GetComponent<GodoiPlayerController>().personagens3D[(int)personagem].SetActive(true);
     }
 }

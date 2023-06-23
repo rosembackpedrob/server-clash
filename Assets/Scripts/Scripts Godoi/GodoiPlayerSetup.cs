@@ -14,6 +14,7 @@ public class GodoiPlayerSetup : MonoBehaviourPun
     public GameObject controller;
 
     public Team meuTime;
+    public Personagem meuPersonagem;
 
     public int myPlayerKill;
     public int myPlayerDeath;
@@ -30,6 +31,7 @@ public class GodoiPlayerSetup : MonoBehaviourPun
     {
         int playerId = PhotonNetwork.LocalPlayer.ActorNumber;
         meuTime = GodoiTeamManager.GetPlayerTeam(playerId);
+        meuPersonagem = CharacterManager.PegarPersonagem(playerId);
         if (pV.IsMine)
         {
             CreateController();
@@ -41,6 +43,16 @@ public class GodoiPlayerSetup : MonoBehaviourPun
         Transform spawnpoint = GodoiSpawnManager.instance.GetSpawnPoint();
         controller = PhotonNetwork.Instantiate(Path.Combine("GodoiPhotonResources", "PlayerController"), spawnpoint.position, spawnpoint.rotation, 0, new object[] { pV.ViewID });
         controller.transform.parent = gameObject.transform;
+    }
+    public void EscudoMedio()
+    {
+        controller.GetComponent<GodoiPlayerController>().currentShield = 25;
+        controller.GetComponent<GodoiPlayerController>().AttEscudo();
+    }
+    public void EscudoGrande()
+    {
+        controller.GetComponent<GodoiPlayerController>().currentShield = 50;
+        controller.GetComponent<GodoiPlayerController>().AttEscudo();
     }
     public void Spawn()
     {

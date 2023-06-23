@@ -69,6 +69,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   controller: {fileID: 0}
   meuTime: 0
+  meuPersonagem: 0
   myPlayerKill: 0
   myPlayerDeath: 0
   dinheiro: 5000

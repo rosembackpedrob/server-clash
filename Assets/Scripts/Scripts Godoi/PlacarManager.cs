@@ -33,6 +33,9 @@ public class PlacarManager : MonoBehaviour
     [SerializeField] TMP_Text[] timer;
     [SerializeField] Image BarraDeTempo;
 
+    [SerializeField] GameObject VitDefensores;
+    [SerializeField] GameObject VitAtacantes;
+
     void Start()
     {
         instance = this;
@@ -82,15 +85,23 @@ public class PlacarManager : MonoBehaviour
         if (contagemDefensores == 0)
         {
             vitoriaDosAtacantes++;
-            ResetTempo();
-            pV.RPC(nameof(RespawnaTodoMundo), RpcTarget.All, vitoriaDosDefensores, vitoriaDosAtacantes);
+            StartCoroutine(TelaDeVitoria());
+            VitAtacantes.SetActive(true);
         }
         else if (contagemAtacantes == 0 || tempoDePartidaAtual <= 0)
         {
             vitoriaDosDefensores++;
-            ResetTempo();
-            pV.RPC(nameof(RespawnaTodoMundo), RpcTarget.All, vitoriaDosDefensores, vitoriaDosAtacantes);
+            StartCoroutine(TelaDeVitoria());
+            VitDefensores.SetActive(true);
         }
+    }
+    IEnumerator TelaDeVitoria()
+    {
+        yield return new WaitForSeconds(3);
+        ResetTempo();
+        pV.RPC(nameof(RespawnaTodoMundo), RpcTarget.All, vitoriaDosDefensores, vitoriaDosAtacantes);
+        VitAtacantes.SetActive(false);
+        VitDefensores.SetActive(false);
     }
     [PunRPC]
     public void RespawnaTodoMundo(int VitDef, int VitAtc)

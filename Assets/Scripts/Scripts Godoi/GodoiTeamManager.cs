@@ -28,7 +28,6 @@ public class GodoiTeamManager
     {
         if (playerTeams.ContainsKey(playerId))
         {
-            Debug.Log("meu team: " + playerTeams[playerId]);
             return playerTeams[playerId];
         }
         return Team.TeamA;

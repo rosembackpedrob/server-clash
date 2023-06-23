@@ -2,6 +2,8 @@ using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class GodoiLoja : MonoBehaviourPunCallbacks
 {
@@ -16,21 +18,46 @@ public class GodoiLoja : MonoBehaviourPunCallbacks
     public int Habilidade1Preço;
     public int Habilidade2Preço;
 
-    public GodoiPlayerSetup playerSetup;
+    public int tempoDeCompra;
+    GodoiPlayerSetup playerSetup;
+
+    int escudo;
+
+    [SerializeField] TMP_Text playerDinheiro;
+    [SerializeField] TMP_Text[] TextosDePreço;
     void Start()
     {
+        Cursor.visible = false;
         Loja.SetActive(false);
         playerSetup = gameObject.transform.GetParentComponent<GodoiPlayerSetup>();
+
+        playerDinheiro.text = (playerSetup.dinheiro.ToString());
+        TextosDePreço[0].text = (FuzilPreço.ToString());
+        TextosDePreço[1].text = (PistolaPreço.ToString());
+        TextosDePreço[2].text = (RiflePreço.ToString());
+        TextosDePreço[3].text = (EspingardaPreço.ToString());
+        TextosDePreço[4].text = (MeioEscudoPreço.ToString());
+        TextosDePreço[5].text = (EscudoCheioPreço.ToString());
+        TextosDePreço[6].text = (Habilidade1Preço.ToString());
+        TextosDePreço[7].text = (Habilidade2Preço.ToString());
     }
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.B))
         {
-            Loja.SetActive(true);
+            AbrirLoja();
         }
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             Loja.SetActive(false);
+        }
+    }
+    public void AbrirLoja()
+    {
+        if (PlacarManager.instance.tempoDePartidaAtual >= PlacarManager.instance.tempoDePartida - tempoDeCompra)
+        {
+            Loja.SetActive(!Loja.activeSelf);
+            Cursor.visible = (Loja.activeSelf);
         }
     }
     public void OnFuzilClick()
@@ -39,6 +66,7 @@ public class GodoiLoja : MonoBehaviourPunCallbacks
         {
             playerSetup.dinheiro -= FuzilPreço;
         }
+        playerDinheiro.text = (playerSetup.dinheiro.ToString());
     }
     public void OnPistolaClick()
     {
@@ -46,6 +74,7 @@ public class GodoiLoja : MonoBehaviourPunCallbacks
         {
             playerSetup.dinheiro -= PistolaPreço;
         }
+        playerDinheiro.text = (playerSetup.dinheiro.ToString());
     }
     public void OnRifleClick()
     {
@@ -53,6 +82,7 @@ public class GodoiLoja : MonoBehaviourPunCallbacks
         {
             playerSetup.dinheiro -= RiflePreço;
         }
+        playerDinheiro.text = (playerSetup.dinheiro.ToString());
     }
     public void OnEspingardaClick()
     {
@@ -60,20 +90,33 @@ public class GodoiLoja : MonoBehaviourPunCallbacks
         {
             playerSetup.dinheiro -= EspingardaPreço;
         }
+        playerDinheiro.text = (playerSetup.dinheiro.ToString());
     }
     public void OnMeioEscudoClick()
     {
-        if (playerSetup.dinheiro >= MeioEscudoPreço)
+        if (escudo < 25)
         {
-            playerSetup.dinheiro -= MeioEscudoPreço;
+            if (playerSetup.dinheiro >= MeioEscudoPreço)
+            {
+                playerSetup.dinheiro -= MeioEscudoPreço;
+                playerSetup.EscudoMedio();
+                escudo = 25;
+            }
         }
+        playerDinheiro.text = (playerSetup.dinheiro.ToString());
     }
     public void OnEscudoCheioClick()
     {
-        if (playerSetup.dinheiro >= EscudoCheioPreço)
+        if (escudo < 50)
         {
-            playerSetup.dinheiro -= EscudoCheioPreço;
+            if (playerSetup.dinheiro >= EscudoCheioPreço)
+            {
+                playerSetup.dinheiro -= EscudoCheioPreço;
+                playerSetup.EscudoGrande();
+                escudo = 50;
+            }
         }
+        playerDinheiro.text = (playerSetup.dinheiro.ToString());
     }
     public void OnHabilidade1Click()
     {
@@ -81,6 +124,7 @@ public class GodoiLoja : MonoBehaviourPunCallbacks
         {
             playerSetup.dinheiro -= Habilidade1Preço;
         }
+        playerDinheiro.text = (playerSetup.dinheiro.ToString());
     }
     public void OnHabilidade2Click()
     {
@@ -88,5 +132,6 @@ public class GodoiLoja : MonoBehaviourPunCallbacks
         {
             playerSetup.dinheiro -= Habilidade2Preço;
         }
+        playerDinheiro.text = (playerSetup.dinheiro.ToString());
     }
 }

@@ -43,6 +43,13 @@ public class GodoiListaNomeJogador : MonoBehaviourPunCallbacks
     }
     public void TrocarPersonagem()
     {
+        if (photonView.IsMine)
+        {
+            photonView.RPC(nameof(MinhaEscolha), RpcTarget.All);
+        }
+    }
+    void RealizarTroca()
+    {
         baseMesh = false;
         cria = false;
         sueli = false;
@@ -53,27 +60,37 @@ public class GodoiListaNomeJogador : MonoBehaviourPunCallbacks
             personagemAtual = 1;
             cria = true;
             characterNameText.text = "C.R.I.A.";
+            CharacterManager.DefinirPersonagem(PhotonNetwork.LocalPlayer.ActorNumber, Personagem.Cria);
         }
         else if (personagemAtual == 0)
         {
             baseMesh = true;
             characterNameText.text = "";
+            CharacterManager.DefinirPersonagem(PhotonNetwork.LocalPlayer.ActorNumber, Personagem.Cria);
         }
         else if (personagemAtual == 1)
         {
             cria = true;
             characterNameText.text = "C.R.I.A.";
+            CharacterManager.DefinirPersonagem(PhotonNetwork.LocalPlayer.ActorNumber, Personagem.Cria);
         }
         else if (personagemAtual == 2)
         {
             sueli = true;
             characterNameText.text = "Sueli";
+            CharacterManager.DefinirPersonagem(PhotonNetwork.LocalPlayer.ActorNumber, Personagem.Sueli);
         }
         else if (personagemAtual == 3)
         {
             espectro = true;
             characterNameText.text = "Espectro";
+            CharacterManager.DefinirPersonagem(PhotonNetwork.LocalPlayer.ActorNumber, Personagem.Espectro);
         }
         imagemDosPersonagens.sprite = spriteDosPersonagens[personagemAtual];
+    }
+    [PunRPC]
+    public void MinhaEscolha()
+    {
+        RealizarTroca();
     }
 }
