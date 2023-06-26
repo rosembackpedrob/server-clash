@@ -5,6 +5,7 @@ using Photon.Pun;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 using Photon.Realtime;
 using UnityEngine.UI;
+using TMPro;
 
 public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
 {
@@ -14,7 +15,8 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
 
     [SerializeField] GameObject cameraHolder;
 
-    [SerializeField] GameObject[] personagens3D;
+    [SerializeField] public GameObject[] personagens3D;
+    [SerializeField] public GameObject[] Modelo3D;
 
     [SerializeField] float mouseSensitivity;
     [SerializeField] float sprintSpeed;
@@ -23,6 +25,11 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
     [SerializeField] float smoothTime;
 
     [SerializeField] GodoiItem[] itens;
+    [SerializeField] GodoiItem pistola;
+    [SerializeField] GodoiItem fuzil;
+    [SerializeField] GodoiItem espingarda;
+    [SerializeField] GodoiItem rifle;
+    [SerializeField] GodoiItem faca;
 
     int itemIndex;
     int previousItemIndex = -1;
@@ -48,6 +55,16 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
     public Personagem playerPersonagem;
 
     public GodoiLoja loja;
+
+    [SerializeField] GodoiSingleShotGun[] Armas;
+
+    [SerializeField] TMP_Text dinheiroTexto;
+
+    public bool Cria123;
+    public bool Suellen;
+    public bool expectopatrono;
+
+    int personagemAtual;
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -59,31 +76,38 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
     {
         if (pV.IsMine)
         {
-            EquipItem(0);
             int playerId = PhotonNetwork.LocalPlayer.ActorNumber;
             playerTeam = GodoiTeamManager.GetPlayerTeam(playerId);
             photonView.RPC(nameof(EspalhaMeuTime), RpcTarget.All, playerTeam);
-            playerPersonagem = CharacterManager.PegarPersonagem(playerId);
-            if (playerPersonagem == Personagem.Cria)
-            {
-                personagens3D[0].SetActive(true);
-            }
-            else if (playerPersonagem == Personagem.Sueli)
-            {
-                personagens3D[1].SetActive(true);
-            }
-            else if (playerPersonagem == Personagem.Espectro)
-            {
-                personagens3D[2].SetActive(true);
-            }
-            photonView.RPC(nameof(EspalhaMeuPersonagem), RpcTarget.All, playerPersonagem);
             loja = gameObject.transform.GetComponentInChildren<GodoiLoja>();
+            playerPersonagem = CharacterManager.PegarPersonagem(playerId);
+
+            personagemAtual = (int)PhotonNetwork.LocalPlayer.CustomProperties["personagemAtual"];
+            photonView.RPC(nameof(TrocarModelo), RpcTarget.All, personagemAtual - 1);
+
+            Modelo3D[personagemAtual - 1].SetActive(false);
         }
         else
         {
             Destroy(GetComponentInChildren<Camera>().gameObject);
             Destroy(rb);
             Destroy(ui);
+        }
+    }
+    [PunRPC]
+    public void TrocarModelo(int personagemAtual)
+    {
+        switch (personagemAtual)
+        {
+            case 0:
+                personagens3D[0].SetActive(true);
+                break;
+            case 1:
+                personagens3D[1].SetActive(true);
+                break;
+            case 2:
+                personagens3D[2].SetActive(true);
+                break;
         }
     }
     void SetlayerDefensores()
@@ -96,12 +120,34 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
         int layer = 7;
         gameObject.layer = layer;
     }
+    public void AtualizarEquipamento()
+    {
+        itens = new GodoiItem[3];
+        if (loja.facaComprado) itens[2] = faca;
+        if (loja.pistolaComprado) itens[0] = pistola;
+        if (loja.EspingardaComprado)
+        {
+            itens[1] = espingarda;
+        }
+        if (loja.rifleComprado)
+        {
+            itens[1] = rifle; 
+        }
+        if (loja.fuzilComprado)
+        {
+            itens[1] = fuzil;
+        }
+        EquipItem(0);
+    }
     private void Update()
     {
         if (!pV.IsMine)
         {
             return;
         }
+
+        dinheiroTexto.text = playerManager.dinheiro.ToString();
+
         if (loja.Loja.activeSelf == true)
         {
             return;
@@ -207,7 +253,7 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
         {
             if (changedProps.ContainsKey("itemIndex") && !pV.IsMine && targetPlayer == pV.Owner)
             {
-                EquipItem((int)changedProps["ItemIndex"]);
+                EquipItem((int)changedProps["itemIndex"]);
             }
         }
         catch (System.Exception e)
@@ -264,11 +310,5 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
     void EspalhaMeuTime(Team time)
     {
         playerTeam = time;
-    }
-    [PunRPC]
-    void EspalhaMeuPersonagem(Personagem personagem, PhotonMessageInfo info)
-    {
-        playerPersonagem = personagem;
-        //info.photonView.GetComponent<GodoiPlayerController>().personagens3D[(int)personagem].SetActive(true);
     }
 }

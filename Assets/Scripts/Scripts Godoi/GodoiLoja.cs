@@ -20,16 +20,28 @@ public class GodoiLoja : MonoBehaviourPunCallbacks
 
     public int tempoDeCompra;
     GodoiPlayerSetup playerSetup;
+    GodoiPlayerController playerController;
 
     int escudo;
 
     [SerializeField] TMP_Text playerDinheiro;
     [SerializeField] TMP_Text[] TextosDePreço;
+
+    public bool fuzilComprado;
+    public bool EspingardaComprado;
+    public bool rifleComprado;
+    public bool pistolaComprado;
+    public bool facaComprado;
     void Start()
     {
+        pistolaComprado = true;
+        facaComprado = true;
+        fuzilComprado = true;
         Cursor.visible = false;
         Loja.SetActive(false);
         playerSetup = gameObject.transform.GetParentComponent<GodoiPlayerSetup>();
+        playerController = gameObject.transform.GetParentComponent<GodoiPlayerController>();
+        playerController.AtualizarEquipamento();
 
         playerDinheiro.text = (playerSetup.dinheiro.ToString());
         TextosDePreço[0].text = (FuzilPreço.ToString());
@@ -62,33 +74,82 @@ public class GodoiLoja : MonoBehaviourPunCallbacks
     }
     public void OnFuzilClick()
     {
-        if (playerSetup.dinheiro >= FuzilPreço)
+        if (playerSetup.dinheiro >= FuzilPreço && fuzilComprado == false)
         {
+            if (EspingardaComprado)
+            {
+                playerSetup.dinheiro += EspingardaPreço;
+                fuzilComprado = true;
+                EspingardaComprado = false;
+                playerController.AtualizarEquipamento();
+            }
+            else if (rifleComprado)
+            {
+                playerSetup.dinheiro += RiflePreço;
+                fuzilComprado = true;
+                rifleComprado = false;
+                playerController.AtualizarEquipamento();
+            }
             playerSetup.dinheiro -= FuzilPreço;
+            fuzilComprado = true;
+            playerController.AtualizarEquipamento();
         }
         playerDinheiro.text = (playerSetup.dinheiro.ToString());
     }
     public void OnPistolaClick()
     {
-        if (playerSetup.dinheiro >= PistolaPreço)
+        if (playerSetup.dinheiro >= PistolaPreço && pistolaComprado == false)
         {
             playerSetup.dinheiro -= PistolaPreço;
+            pistolaComprado = true;
         }
         playerDinheiro.text = (playerSetup.dinheiro.ToString());
     }
     public void OnRifleClick()
     {
-        if (playerSetup.dinheiro >= RiflePreço)
+        if (playerSetup.dinheiro >= RiflePreço && rifleComprado == false)
         {
+            if (EspingardaComprado)
+            {
+                playerSetup.dinheiro += EspingardaPreço;
+                rifleComprado = true;
+                EspingardaComprado = false;
+                playerController.AtualizarEquipamento();
+            }
+            else if (fuzilComprado)
+            {
+                playerSetup.dinheiro += FuzilPreço;
+                rifleComprado = true;
+                fuzilComprado = false;
+                playerController.AtualizarEquipamento();
+            }
             playerSetup.dinheiro -= RiflePreço;
+            rifleComprado = true;
+            playerController.AtualizarEquipamento();
         }
         playerDinheiro.text = (playerSetup.dinheiro.ToString());
     }
     public void OnEspingardaClick()
     {
-        if (playerSetup.dinheiro >= EspingardaPreço)
+        if (playerSetup.dinheiro >= EspingardaPreço && EspingardaComprado == false)
         {
+            if (fuzilComprado)
+            {
+                playerSetup.dinheiro -= FuzilPreço;
+                EspingardaComprado = true;
+                fuzilComprado = false;
+                playerController.AtualizarEquipamento();
+            }
+            else if (rifleComprado)
+            {
+                playerSetup.dinheiro -= RiflePreço;
+                EspingardaComprado = true;
+                rifleComprado = false;
+                playerController.AtualizarEquipamento();
+            }
             playerSetup.dinheiro -= EspingardaPreço;
+            EspingardaComprado = true;
+            playerController.AtualizarEquipamento();
         }
         playerDinheiro.text = (playerSetup.dinheiro.ToString());
     }

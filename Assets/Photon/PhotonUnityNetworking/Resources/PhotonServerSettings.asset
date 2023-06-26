@@ -58,6 +58,13 @@ MonoBehaviour:
   - UpdateTempoDisplay
   - EspalhaMeuPersonagem
   - MinhaEscolha
+  - MeuPersonagem
+  - AtualizarPersonagem
+  - EscolheuEste
+  - SincronizarModelo
+  - TrocarModelo
+  - EquipItem
+  - UpdateItemOnOtherClients
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

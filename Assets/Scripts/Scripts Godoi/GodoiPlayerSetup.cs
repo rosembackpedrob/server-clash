@@ -6,6 +6,7 @@ using System.IO;
 using Photon.Realtime;
 using System.Linq;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
+using TMPro;
 
 public class GodoiPlayerSetup : MonoBehaviourPun
 {
@@ -14,7 +15,7 @@ public class GodoiPlayerSetup : MonoBehaviourPun
     public GameObject controller;
 
     public Team meuTime;
-    public Personagem meuPersonagem;
+    public Personagem[] meuPersonagem;
 
     public int myPlayerKill;
     public int myPlayerDeath;
@@ -31,7 +32,6 @@ public class GodoiPlayerSetup : MonoBehaviourPun
     {
         int playerId = PhotonNetwork.LocalPlayer.ActorNumber;
         meuTime = GodoiTeamManager.GetPlayerTeam(playerId);
-        meuPersonagem = CharacterManager.PegarPersonagem(playerId);
         if (pV.IsMine)
         {
             CreateController();
@@ -43,6 +43,7 @@ public class GodoiPlayerSetup : MonoBehaviourPun
         Transform spawnpoint = GodoiSpawnManager.instance.GetSpawnPoint();
         controller = PhotonNetwork.Instantiate(Path.Combine("GodoiPhotonResources", "PlayerController"), spawnpoint.position, spawnpoint.rotation, 0, new object[] { pV.ViewID });
         controller.transform.parent = gameObject.transform;
+        dinheiro = 5000;
     }
     public void EscudoMedio()
     {

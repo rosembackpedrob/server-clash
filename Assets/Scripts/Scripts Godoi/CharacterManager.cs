@@ -4,14 +4,13 @@ using UnityEngine;
 
 public enum Personagem
 {
-    Cria,
-    Sueli,
-    Espectro
+    Cria = 0,
+    Sueli = 1,
+    Espectro = 2
 }
 public class CharacterManager
 {
     public static Dictionary<int, Personagem> Personagens = new Dictionary<int, Personagem>();
-
     public static void DefinirPersonagem(int playerId, Personagem personagem)
     {
         if (!Personagens.ContainsKey(playerId))
@@ -27,7 +26,6 @@ public class CharacterManager
     {
         if (Personagens.ContainsKey(playerId))
         {
-            Debug.Log("Meu personagem é: " + Personagens[playerId]);
             return Personagens[playerId];
         }
         return Personagem.Cria;

@@ -236,13 +236,9 @@ MonoBehaviour:
   imagemDosPersonagens: {fileID: 4445867031671551599}
   spriteDosPersonagens:
   - {fileID: 21300000, guid: ae5f5838100869e41b957cc8a9375010, type: 3}
-  - {fileID: 21300000, guid: 82b103f1062533f4aa63ed5bd3c27b56, type: 3}
+  - {fileID: 21300000, guid: 2dfac6d61cf1c884dba5f4f7907887ad, type: 3}
   - {fileID: 21300000, guid: 8f9ce231c24fcc245a5ad5f2e08ce180, type: 3}
   - {fileID: 21300000, guid: ea0e5774794684245a0be883fcb403e8, type: 3}
-  baseMesh: 0
-  cria: 0
-  sueli: 0
-  espectro: 0
   personagemAtual: 0
 --- !u!114 &-7593727837623861692
 MonoBehaviour:

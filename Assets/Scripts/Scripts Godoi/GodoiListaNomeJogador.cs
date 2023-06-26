@@ -5,6 +5,7 @@ using TMPro;
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine.UI;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
 
 public class GodoiListaNomeJogador : MonoBehaviourPunCallbacks
 {
@@ -15,16 +16,25 @@ public class GodoiListaNomeJogador : MonoBehaviourPunCallbacks
     [SerializeField] Sprite[] spriteDosPersonagens;
     Player player;
 
-    public bool baseMesh;
-    public bool cria;
-    public bool sueli;
-    public bool espectro;
-
-    public int personagemAtual = 0;
+    public int personagemAtual = 1;
     public void SetUp(Player _player)
     {
         player = _player;
         playerNameText.text = _player.NickName;
+    }
+    public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+    {
+        // Verifique se as propriedades personalizadas do jogador foram atualizadas
+        if (targetPlayer == photonView.Owner)
+        {
+            // Verifique se a propriedade "personagemAtual" foi alterada
+            if (changedProps.ContainsKey("personagemAtual"))
+            {
+                // Atualize o personagem exibido no jogador local
+                personagemAtual = (int)changedProps["personagemAtual"];
+                AtualizarPersonagem(personagemAtual);
+            }
+        }
     }
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
@@ -45,52 +55,34 @@ public class GodoiListaNomeJogador : MonoBehaviourPunCallbacks
     {
         if (photonView.IsMine)
         {
-            photonView.RPC(nameof(MinhaEscolha), RpcTarget.All);
+            personagemAtual++;
+            if (personagemAtual > 3)
+                personagemAtual = 1;
+            Hashtable hash = new Hashtable();
+            hash.Add("personagemAtual", personagemAtual);
+            PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
         }
+        Debug.Log(personagemAtual);
     }
-    void RealizarTroca()
+    private void AtualizarPersonagem(int personagem)
     {
-        baseMesh = false;
-        cria = false;
-        sueli = false;
-        espectro = false;
-        personagemAtual++;
-        if (personagemAtual == 4)
-        {
-            personagemAtual = 1;
-            cria = true;
-            characterNameText.text = "C.R.I.A.";
-            CharacterManager.DefinirPersonagem(PhotonNetwork.LocalPlayer.ActorNumber, Personagem.Cria);
-        }
-        else if (personagemAtual == 0)
-        {
-            baseMesh = true;
-            characterNameText.text = "";
-            CharacterManager.DefinirPersonagem(PhotonNetwork.LocalPlayer.ActorNumber, Personagem.Cria);
-        }
-        else if (personagemAtual == 1)
-        {
-            cria = true;
-            characterNameText.text = "C.R.I.A.";
-            CharacterManager.DefinirPersonagem(PhotonNetwork.LocalPlayer.ActorNumber, Personagem.Cria);
-        }
-        else if (personagemAtual == 2)
-        {
-            sueli = true;
-            characterNameText.text = "Sueli";
-            CharacterManager.DefinirPersonagem(PhotonNetwork.LocalPlayer.ActorNumber, Personagem.Sueli);
-        }
-        else if (personagemAtual == 3)
-        {
-            espectro = true;
-            characterNameText.text = "Espectro";
-            CharacterManager.DefinirPersonagem(PhotonNetwork.LocalPlayer.ActorNumber, Personagem.Espectro);
-        }
-        imagemDosPersonagens.sprite = spriteDosPersonagens[personagemAtual];
+        // Faça as alterações necessárias no jogador com base no personagemAtual
+        characterNameText.text = GetCharacterName(personagem);
+        imagemDosPersonagens.sprite = spriteDosPersonagens[personagem];
     }
-    [PunRPC]
-    public void MinhaEscolha()
+    private string GetCharacterName(int personagem)
     {
-        RealizarTroca();
+        // Retorne o nome do personagem com base no ID do personagem
+        switch (personagem)
+        {
+            case 1:
+                return "C.R.I.A.";
+            case 2:
+                return "Sueli";
+            case 3:
+                return "Espectro";
+            default:
+                return "";
+        }
     }
 }
