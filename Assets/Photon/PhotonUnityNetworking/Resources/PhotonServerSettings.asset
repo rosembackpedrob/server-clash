@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PhotonServerSettings
   m_EditorClassIdentifier: 
   AppSettings:
-    AppIdRealtime: 553e4750-4216-4cf2-b827-b547e6c4d7e1
+    AppIdRealtime: a3c2ae3f-aa30-46b9-893c-9989fd2e7c96
     AppIdFusion: 
     AppIdChat: 
     AppIdVoice: 
@@ -65,6 +65,10 @@ MonoBehaviour:
   - TrocarModelo
   - EquipItem
   - UpdateItemOnOtherClients
+  - SincTelaDeVitoria
+  - MinhaArma
+  - EquipItemRPC
+  - CorAliados
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

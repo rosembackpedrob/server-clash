@@ -46,10 +46,20 @@ public class GodoiSingleShotGun : GodoiGun
             municaoReserva -= 30;
             municao = 30;
         }
-        else if (gameObject.name == "Pistola" && municao >= 15)
+        else if (gameObject.name == "Pistola" && municaoReserva >= 15)
         {
             municaoReserva -= 15;
             municao = 15;
+        }
+        else if (gameObject.name == "Espingarda" && municaoReserva >= 4)
+        {
+            municaoReserva -= 4;
+            municao = 4;
+        }
+        else if (gameObject.name == "Rifle" && municaoReserva >= 2)
+        {
+            municaoReserva -= 2;
+            municao = 2;
         }
         AttHudMunicao();
     }

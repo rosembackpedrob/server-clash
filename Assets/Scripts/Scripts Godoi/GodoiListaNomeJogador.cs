@@ -57,12 +57,20 @@ public class GodoiListaNomeJogador : MonoBehaviourPunCallbacks
         {
             personagemAtual++;
             if (personagemAtual > 3)
+            {
                 personagemAtual = 1;
+            }
             Hashtable hash = new Hashtable();
             hash.Add("personagemAtual", personagemAtual);
             PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
         }
         Debug.Log(personagemAtual);
+    }
+    private void Start()
+    {
+        Hashtable hash = new Hashtable();
+        hash.Add("personagemAtual", 1);
+        PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
     }
     private void AtualizarPersonagem(int personagem)
     {

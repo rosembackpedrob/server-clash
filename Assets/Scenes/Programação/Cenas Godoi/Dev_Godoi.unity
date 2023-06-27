@@ -463,6 +463,7 @@ MonoBehaviour:
   playerListDefensores: {fileID: 5061588913686209512, guid: 39a96c218cfd8164baeba11ba627d413, type: 3}
   playerListAtacantes: {fileID: 5093995715670135949, guid: d10b2bd087b00ce49ab49ce36545f43a, type: 3}
   startGameButton: {fileID: 803182780}
+  MinimoDePlayers: 2
   TimeA: 0
   TimeB: 0
   conttimeA: 0
@@ -1603,7 +1604,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 91fe473efdf527f40bcefa0d85bab851, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 1e41192670e6cda408e2b479a4614d20, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

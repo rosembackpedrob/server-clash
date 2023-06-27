@@ -26,6 +26,7 @@ public class GodoiLauncher : MonoBehaviourPunCallbacks
     [SerializeField] public GameObject playerListAtacantes;
 
     [SerializeField] GameObject startGameButton;
+    [SerializeField] private int MinimoDePlayers;
     public bool TimeA;
     public bool TimeB;
     public int conttimeA;
@@ -97,7 +98,9 @@ public class GodoiLauncher : MonoBehaviourPunCallbacks
             Debug.Log("pv é meu");
         }
         photonView.RPC(nameof(RequisicaoDeTime), RpcTarget.MasterClient);
+
         startGameButton.SetActive(PhotonNetwork.IsMasterClient);
+        Debug.Log(PhotonNetwork.CurrentRoom.Players.Count);
     }
     public void JoinTeam(int team)
     {

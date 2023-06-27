@@ -36,6 +36,7 @@ public class PlacarManager : MonoBehaviour
     [SerializeField] GameObject VitDefensores;
     [SerializeField] GameObject VitAtacantes;
 
+    [SerializeField] GameObject[] prePartida;
     void Start()
     {
         instance = this;
@@ -85,14 +86,35 @@ public class PlacarManager : MonoBehaviour
         if (contagemDefensores == 0)
         {
             vitoriaDosAtacantes++;
-            StartCoroutine(TelaDeVitoria());
-            VitAtacantes.SetActive(true);
+            //StartCoroutine(TelaDeVitoria());
+            //VitAtacantes.SetActive(true);
+            pV.RPC(nameof(SincTelaDeVitoria), RpcTarget.All, false);
         }
         else if (contagemAtacantes == 0 || tempoDePartidaAtual <= 0)
         {
             vitoriaDosDefensores++;
-            StartCoroutine(TelaDeVitoria());
+            //StartCoroutine(TelaDeVitoria());
+            //VitDefensores.SetActive(true);
+            pV.RPC(nameof(SincTelaDeVitoria), RpcTarget.All, true);
+        }
+        if (vitoriaDosDefensores == 5 || vitoriaDosAtacantes == 5)
+        {
+            PhotonNetwork.Disconnect();
+            PhotonNetwork.LoadLevel(0);
+        }
+    }
+    [PunRPC]
+    void SincTelaDeVitoria(bool Defensores)
+    {
+        if (Defensores)
+        {
             VitDefensores.SetActive(true);
+            StartCoroutine(TelaDeVitoria());
+        }
+        else
+        {
+            VitAtacantes.SetActive(true);
+            StartCoroutine(TelaDeVitoria());
         }
     }
     IEnumerator TelaDeVitoria()

@@ -17,6 +17,7 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
 
     [SerializeField] public GameObject[] personagens3D;
     [SerializeField] public GameObject[] Modelo3D;
+    [SerializeField] public GameObject[] Modelo3DAzul;
 
     [SerializeField] float mouseSensitivity;
     [SerializeField] float sprintSpeed;
@@ -24,12 +25,14 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
     [SerializeField] float jumpForce;
     [SerializeField] float smoothTime;
 
+    [SerializeField] GameObject[] maoPersonagens;
     [SerializeField] GodoiItem[] itens;
     [SerializeField] GodoiItem pistola;
     [SerializeField] GodoiItem fuzil;
     [SerializeField] GodoiItem espingarda;
     [SerializeField] GodoiItem rifle;
     [SerializeField] GodoiItem faca;
+    [SerializeField] Animator[] anim;
 
     int itemIndex;
     int previousItemIndex = -1;
@@ -45,7 +48,7 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
 
     public int _kill;
     public int _Death;
-    const float maxHealth = 100f;
+    const float maxHealth = 150f;
     public float currentHealth = maxHealth;
     const float maxShield = 50f;
     public float currentShield = 0;
@@ -56,8 +59,6 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
 
     public GodoiLoja loja;
 
-    [SerializeField] GodoiSingleShotGun[] Armas;
-
     [SerializeField] TMP_Text dinheiroTexto;
 
     public bool Cria123;
@@ -65,11 +66,12 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
     public bool expectopatrono;
 
     int personagemAtual;
+
+    public GodoiPlayerController[] listaDeControllers;
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
         pV = GetComponent<PhotonView>();
-
         playerManager = PhotonView.Find((int)pV.InstantiationData[0]).GetComponent<GodoiPlayerSetup>();
     }
     private void Start()
@@ -83,15 +85,35 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
             playerPersonagem = CharacterManager.PegarPersonagem(playerId);
 
             personagemAtual = (int)PhotonNetwork.LocalPlayer.CustomProperties["personagemAtual"];
-            photonView.RPC(nameof(TrocarModelo), RpcTarget.All, personagemAtual - 1);
+            photonView.RPC(nameof(TrocarModelo), RpcTarget.AllBufferedViaServer, personagemAtual - 1);
 
             Modelo3D[personagemAtual - 1].SetActive(false);
+            LockRoom();
+            listaDeControllers = GameObject.FindObjectsOfType<GodoiPlayerController>();
         }
         else
         {
             Destroy(GetComponentInChildren<Camera>().gameObject);
             Destroy(rb);
             Destroy(ui);
+        }
+    }
+    private void LockRoom()
+    {
+        if (PhotonNetwork.IsMasterClient)
+        {
+            RoomOptions roomOptions = new RoomOptions();
+            roomOptions.IsOpen = false;    // Set the room to not be joinable
+            roomOptions.IsVisible = false; // Set the room to not be visible in the lobby
+
+            PhotonNetwork.CurrentRoom.SetCustomProperties(roomOptions.CustomRoomProperties); // Apply the custom room properties
+
+            // Update the room properties for other players
+            PhotonNetwork.CurrentRoom.SetPropertiesListedInLobby(new string[] { "IsOpen", "IsVisible" });
+
+            Debug.Log("Room locked");
+
+            Debug.Log(PhotonNetwork.CurrentRoom.MaxPlayers + " " + PhotonNetwork.CurrentRoom.IsVisible + " " + PhotonNetwork.CurrentRoom.IsOpen);
         }
     }
     [PunRPC]
@@ -123,6 +145,7 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
     public void AtualizarEquipamento()
     {
         itens = new GodoiItem[3];
+        Debug.Log("O numero do meu personagem é: " + (personagemAtual - 1));
         if (loja.facaComprado) itens[2] = faca;
         if (loja.pistolaComprado) itens[0] = pistola;
         if (loja.EspingardaComprado)
@@ -137,6 +160,24 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
         {
             itens[1] = fuzil;
         }
+        /*if (personagemAtual - 1 == 0)
+        {
+            itens[0].transform.parent = maoPersonagens[0].transform;
+            itens[1].transform.parent = maoPersonagens[0].transform;
+            itens[2].transform.parent = maoPersonagens[0].transform;
+        }
+        else if (personagemAtual - 1 == 1)
+        {
+            itens[0].transform.parent = maoPersonagens[1].transform;
+            itens[1].transform.parent = maoPersonagens[1].transform;
+            itens[2].transform.parent = maoPersonagens[1].transform;
+        }
+        else if (personagemAtual - 1 == 2)
+        {
+            itens[0].transform.parent = maoPersonagens[2].transform;
+            itens[1].transform.parent = maoPersonagens[2].transform;
+            itens[2].transform.parent = maoPersonagens[2].transform;
+        }*/
         EquipItem(0);
     }
     private void Update()
@@ -209,6 +250,22 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
     }
     void Movimento()
     {
+        /*if (Input.GetKey(KeyCode.LeftShift) && Input.GetAxisRaw("Horizontal") != 0)
+        {
+            anim[personagemAtual - 1].SetTrigger("Correndo");
+        }
+        else if (Input.GetKey(KeyCode.LeftShift) && Input.GetAxisRaw("Vertical") != 0)
+        {
+            anim[personagemAtual - 1].SetTrigger("Correndo");
+        }
+        else if (Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0)
+        {
+            anim[personagemAtual - 1].SetTrigger("Andando");
+        } 
+        else
+        {
+            anim[personagemAtual - 1].SetTrigger("Parado");
+        }*/
         Vector3 moveDir = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
 
         moveAmount = Vector3.SmoothDamp(moveAmount, moveDir * (Input.GetKey(KeyCode.LeftShift) ? sprintSpeed : walkSpeed), ref smoothMoveVelocity, smoothTime);
@@ -232,6 +289,7 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
 
         if (previousItemIndex != -1)
         {
+            Debug.Log(itens[previousItemIndex]);
             itens[previousItemIndex].itemGameObject.SetActive(false);
         }
 
@@ -243,12 +301,25 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
             hash.Add("itemIndex", itemIndex);
             PhotonNetwork.LocalPlayer.SetCustomProperties(hash);
         }
+        if (itens[0].tag == "Pistola")
+        {
+            anim[personagemAtual - 1].SetBool("Rifle", false);
+        }
+        if (itens[itemIndex] == fuzil)
+        {
+            anim[personagemAtual - 1].SetBool("Rifle", true);
+        }
+        if (itens[2].tag == "Pistola")
+        {
+            anim[personagemAtual - 1].SetBool("Rifle", false);
+        }
+        if (itens[1].tag == "Fuzil")
+        {
+            anim[personagemAtual - 1].SetBool("Rifle", true);
+        }
     }
-
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
     {
-        base.OnPlayerPropertiesUpdate(targetPlayer, changedProps);
-
         try
         {
             if (changedProps.ContainsKey("itemIndex") && !pV.IsMine && targetPlayer == pV.Owner)

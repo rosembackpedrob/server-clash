@@ -78,14 +78,12 @@ public class GodoiLoja : MonoBehaviourPunCallbacks
         {
             if (EspingardaComprado)
             {
-                playerSetup.dinheiro += EspingardaPreço;
                 fuzilComprado = true;
                 EspingardaComprado = false;
                 playerController.AtualizarEquipamento();
             }
             else if (rifleComprado)
             {
-                playerSetup.dinheiro += RiflePreço;
                 fuzilComprado = true;
                 rifleComprado = false;
                 playerController.AtualizarEquipamento();
@@ -111,14 +109,12 @@ public class GodoiLoja : MonoBehaviourPunCallbacks
         {
             if (EspingardaComprado)
             {
-                playerSetup.dinheiro += EspingardaPreço;
                 rifleComprado = true;
                 EspingardaComprado = false;
                 playerController.AtualizarEquipamento();
             }
             else if (fuzilComprado)
             {
-                playerSetup.dinheiro += FuzilPreço;
                 rifleComprado = true;
                 fuzilComprado = false;
                 playerController.AtualizarEquipamento();
@@ -135,14 +131,12 @@ public class GodoiLoja : MonoBehaviourPunCallbacks
         {
             if (fuzilComprado)
             {
-                playerSetup.dinheiro -= FuzilPreço;
                 EspingardaComprado = true;
                 fuzilComprado = false;
                 playerController.AtualizarEquipamento();
             }
             else if (rifleComprado)
             {
-                playerSetup.dinheiro -= RiflePreço;
                 EspingardaComprado = true;
                 rifleComprado = false;
                 playerController.AtualizarEquipamento();
