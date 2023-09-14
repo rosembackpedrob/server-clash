@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: PhotonServerSettings
   m_EditorClassIdentifier: 
   AppSettings:
-    AppIdRealtime: 
+    AppIdRealtime: a3c2ae3f-aa30-46b9-893c-9989fd2e7c96
     AppIdFusion: 
     AppIdChat: 
     AppIdVoice: 
@@ -28,7 +28,7 @@ MonoBehaviour:
     AuthMode: 0
     EnableLobbyStatistics: 0
     NetworkLogging: 1
-  DevRegion: 
+  DevRegion: sa
   PunLogging: 0
   EnableSupportLogger: 0
   RunInBackground: 1
@@ -39,6 +39,36 @@ MonoBehaviour:
   - DestroySpaceship
   - Fire
   - RespawnSpaceship
+  - RPC_TakeDamage
+  - RPC_Shoot
+  - DestroyObject
+  - PlayerNaSala
+  - DefinirTime
+  - RequisicaoDeTime
+  - DefinirPosicao
+  - TimeAouB
+  - DefinirLayer
+  - PedirLayer
+  - EspalhaMeuTime
+  - RPC_GetKill
+  - AtualizarPlacar
+  - FazerContagem
+  - RespawnaTodoMundo
+  - AttTabela
+  - UpdateTempoDisplay
+  - EspalhaMeuPersonagem
+  - MinhaEscolha
+  - MeuPersonagem
+  - AtualizarPersonagem
+  - EscolheuEste
+  - SincronizarModelo
+  - TrocarModelo
+  - EquipItem
+  - UpdateItemOnOtherClients
+  - SincTelaDeVitoria
+  - MinhaArma
+  - EquipItemRPC
+  - CorAliados
   DisableAutoOpenWizard: 1
   ShowSettings: 0
-  DevRegionSetOnce: 0
+  DevRegionSetOnce: 1
