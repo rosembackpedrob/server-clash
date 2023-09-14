@@ -3530,6 +3530,12 @@ MonoBehaviour:
   Suellen: 0
   expectopatrono: 0
   listaDeControllers: []
+  audios:
+  - {fileID: 8300000, guid: cc5f7d92ae0c03045bf06c5cce080c5d, type: 3}
+  - {fileID: 8300000, guid: d1bb3cc67eb31cf4697776b5f08e8810, type: 3}
+  - {fileID: 8300000, guid: c369b5d2beb965646ad90fb3d801516b, type: 3}
+  - {fileID: 8300000, guid: 826abc5d70d1f0d4ebedad4c15b06885, type: 3}
+  - {fileID: 8300000, guid: 5ca2a7d6c6c098c41a0498d46f0186d4, type: 3}
 --- !u!114 &4222985286994413318
 MonoBehaviour:
   m_ObjectHideFlags: 0

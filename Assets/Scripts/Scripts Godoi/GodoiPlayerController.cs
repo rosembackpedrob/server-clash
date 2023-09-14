@@ -68,6 +68,8 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
     int personagemAtual;
 
     public GodoiPlayerController[] listaDeControllers;
+
+    [SerializeField] AudioClip[] audios;
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
@@ -230,6 +232,32 @@ public class GodoiPlayerController : MonoBehaviourPunCallbacks, GodoiIDameagable
 
         if (Input.GetMouseButtonDown(0))
         {
+            Debug.Log(itens[itemIndex]);
+            if (itens[itemIndex] == fuzil)
+            {
+                AudioManager.instance.Play("FuzilTiro");
+                //AudioManageeer.instance.PlaySoundEffect(audios[0]);
+            }
+            else if (itens[itemIndex] == pistola)
+            {
+                AudioManager.instance.Play("FuzilTiro");
+                //AudioManageeer.instance.PlaySoundEffect(audios[1]);
+            }
+            else if (itens[itemIndex] == faca)
+            {
+                AudioManager.instance.Play("FuzilTiro");
+                //AudioManageeer.instance.PlaySoundEffect(audios[2]);
+            }
+            else if (itens[itemIndex] == espingarda)
+            {
+                AudioManager.instance.Play("FuzilTiro");
+                //AudioManageeer.instance.PlaySoundEffect(audios[3]);
+            }
+            else if (itens[itemIndex] == rifle)
+            {
+                AudioManager.instance.Play("FuzilTiro");
+                //AudioManageeer.instance.PlaySoundEffect(audios[4]);
+            }
             itens[itemIndex].Use();
         }
         if (transform.position.y < -10f)

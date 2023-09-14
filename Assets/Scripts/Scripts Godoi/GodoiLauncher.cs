@@ -31,6 +31,8 @@ public class GodoiLauncher : MonoBehaviourPunCallbacks
     public bool TimeB;
     public int conttimeA;
     public int conttimeB;
+
+    [SerializeField] AudioClip musica;
     private void Awake()
     {
         Instance = this;
@@ -50,6 +52,8 @@ public class GodoiLauncher : MonoBehaviourPunCallbacks
         PhotonNetwork.JoinLobby();
 
         PhotonNetwork.AutomaticallySyncScene = true;
+
+        AudioManageeer.instance.PlayMusic(musica);
     }
     public override void OnJoinedLobby()
     {
