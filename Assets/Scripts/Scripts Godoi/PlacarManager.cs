@@ -44,6 +44,7 @@ public class PlacarManager : MonoBehaviour
         vitoriaDosAtacantes = 0;
         vitoriaDosDefensores = 0;
         ResetTempo();
+        // fazer tempo de partida, se o tempo acabar - vitoria dos defensores.
     }
     public void ComecarContagem()
     {
@@ -85,26 +86,21 @@ public class PlacarManager : MonoBehaviour
         if (contagemDefensores == 0)
         {
             vitoriaDosAtacantes++;
+            //StartCoroutine(TelaDeVitoria());
+            //VitAtacantes.SetActive(true);
             pV.RPC(nameof(SincTelaDeVitoria), RpcTarget.All, false);
-            AudioManageeer.instance.PlaySoundEffect(AudioManageeer.instance.audiosPlacar[1]);
         }
         else if (contagemAtacantes == 0 || tempoDePartidaAtual <= 0)
         {
             vitoriaDosDefensores++;
+            //StartCoroutine(TelaDeVitoria());
+            //VitDefensores.SetActive(true);
             pV.RPC(nameof(SincTelaDeVitoria), RpcTarget.All, true);
-            AudioManageeer.instance.PlaySoundEffect(AudioManageeer.instance.audiosPlacar[0]);
         }
-        if (vitoriaDosDefensores == 5)
+        if (vitoriaDosDefensores == 5 || vitoriaDosAtacantes == 5)
         {
             PhotonNetwork.Disconnect();
             PhotonNetwork.LoadLevel(0);
-            AudioManageeer.instance.PlaySoundEffect(AudioManageeer.instance.audiosPlacar[2]);
-        }
-        if (vitoriaDosAtacantes == 5)
-        {
-            PhotonNetwork.Disconnect();
-            PhotonNetwork.LoadLevel(0);
-            AudioManageeer.instance.PlaySoundEffect(AudioManageeer.instance.audiosPlacar[3]);
         }
     }
     [PunRPC]
@@ -121,7 +117,7 @@ public class PlacarManager : MonoBehaviour
             StartCoroutine(TelaDeVitoria());
         }
     }
-    public IEnumerator TelaDeVitoria()
+    IEnumerator TelaDeVitoria()
     {
         yield return new WaitForSeconds(3);
         ResetTempo();

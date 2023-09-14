@@ -86,7 +86,7 @@ public class GodoiListaNomeJogador : MonoBehaviourPunCallbacks
             case 1:
                 return "C.R.I.A.";
             case 2:
-                return "Infiltrada";
+                return "Sueli";
             case 3:
                 return "Espectro";
             default:

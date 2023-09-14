@@ -369,8 +369,8 @@ MonoBehaviour:
   spriteDosPersonagens:
   - {fileID: 21300000, guid: ae5f5838100869e41b957cc8a9375010, type: 3}
   - {fileID: 21300000, guid: 2dfac6d61cf1c884dba5f4f7907887ad, type: 3}
-  - {fileID: 21300000, guid: 5a5183763af94ae4dbb3bb4b1f106610, type: 3}
-  - {fileID: 21300000, guid: 3bbdc0c479524914db27e7961fb36f0e, type: 3}
+  - {fileID: 21300000, guid: 8f9ce231c24fcc245a5ad5f2e08ce180, type: 3}
+  - {fileID: 21300000, guid: ea0e5774794684245a0be883fcb403e8, type: 3}
   personagemAtual: 0
 --- !u!114 &7242972703375081768
 MonoBehaviour:
